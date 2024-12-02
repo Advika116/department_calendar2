@@ -1,0 +1,234 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_EVENTS 10
+#define MAX_DAYS_IN_MONTH 31
+
+// Structure to store events for each day
+typedef struct {
+    int day;
+    char events[MAX_EVENTS][100];
+    int event_count;
+} Day;
+
+// Structure to store the calendar for a given month
+typedef struct {
+    int year;
+    int month;
+    Day days[MAX_DAYS_IN_MONTH];
+} Calendar;
+
+// Predefined events for the department (could be read from a file, database, or hardcoded)
+void populateEvents(Calendar *calendar) {
+    if (calendar->year == 2024) {
+        // Events for January 2024
+        if (calendar->month == 1) {
+            strcpy(calendar->days[25].events[calendar->days[25].event_count++], "Republic Day");
+            strcpy(calendar->days[27].events[calendar->days[27].event_count++], "IT Tech Club");
+             strcpy(calendar->days[16].events[calendar->days[16].event_count++], "Seminar on AI tools");
+        }
+        // Events for February 2024
+        else if (calendar->month == 2) {
+            strcpy(calendar->days[18].events[calendar->days[18].event_count++], "Chhatrapati Shivaji Maharaj Jayanti");
+            strcpy(calendar->days[14].events[calendar->days[14].event_count++], "Hackathon");
+        }
+        // Events for March 2024
+        else if (calendar->month == 3) {
+            strcpy(calendar->days[23].events[calendar->days[23].event_count++], "Holi");
+            strcpy(calendar->days[28].events[calendar->days[28].event_count++], "Good Friday");
+            strcpy(calendar->days[24].events[calendar->days[24].event_count++], "Industrial visit");
+        }
+        // Events for April 2024
+        else if (calendar->month == 4) {
+            strcpy(calendar->days[8].events[calendar->days[8].event_count++], "Gudi Padwa");
+            strcpy(calendar->days[16].events[calendar->days[16].event_count++], "Shri Ram Navami");
+            strcpy(calendar->days[22].events[calendar->days[22].event_count++], "Hanuman Jayanti");
+            strcpy(calendar->days[10].events[calendar->days[10].event_count++], "Techno social activity");
+        }
+        // Events for May 2024
+        else if (calendar->month == 5) {
+            strcpy(calendar->days[0].events[calendar->days[0].event_count++], "Maharashtra Day");
+            strcpy(calendar->days[5].events[calendar->days[5].event_count++], "Final Exam Start");
+            strcpy(calendar->days[14].events[calendar->days[14].event_count++], "Final Exam End");
+        }
+         else if (calendar->month == 7) {
+            strcpy(calendar->days[16].events[calendar->days[16].event_count++], "Ashadhi Ekadashi");
+            strcpy(calendar->days[1].events[calendar->days[1].event_count++], "Project Submission");
+            strcpy(calendar->days[25].events[calendar->days[25].event_count++], "IT Tech club seminar");
+         }
+          else if (calendar->month == 8) {
+            strcpy(calendar->days[18].events[calendar->days[18].event_count++], "Rakshabandhan");
+             strcpy(calendar->days[14].events[calendar->days[14].event_count++], "Independence Day");
+            strcpy(calendar->days[25].events[calendar->days[25].event_count++], "Krushna Janamashtami");
+            strcpy(calendar->days[1].events[calendar->days[1].event_count++], "Github Workshop");
+             strcpy(calendar->days[7].events[calendar->days[7].event_count++], "Unit test-1");
+            strcpy(calendar->days[23].events[calendar->days[23].event_count++], "Brain games activity");
+          } 
+         else if (calendar->month == 9) {
+            strcpy(calendar->days[6].events[calendar->days[6].event_count++], "Ganesh Chaturthi"); 
+            strcpy(calendar->days[16].events[calendar->days[16].event_count++], "Anant Chaturdashi");
+             strcpy(calendar->days[5].events[calendar->days[5].event_count++], "Parents Teacher Meeting"); 
+            strcpy(calendar->days[24].events[calendar->days[24].event_count++], "Unit test-2");
+         }
+        else if (calendar->month == 10) {
+            strcpy(calendar->days[1].events[calendar->days[1].event_count++], "Mahatma Gandhi Jayanti"); 
+            strcpy(calendar->days[11].events[calendar->days[11].event_count++], "Dassehra");
+             strcpy(calendar->days[9].events[calendar->days[9].event_count++], "Dexterity event"); 
+            strcpy(calendar->days[23].events[calendar->days[23].event_count++], "Unit test-3");
+        }
+        else if (calendar->month == 11) {
+            strcpy(calendar->days[0].events[calendar->days[0].event_count++], "Laxmi Poojan"); 
+            strcpy(calendar->days[26].events[calendar->days[26].event_count++], "Practical Final Submission");
+        }
+        else if (calendar->month == 12) {
+            strcpy(calendar->days[8].events[calendar->days[8].event_count++], "Mid term exam start"); 
+            strcpy(calendar->days[18].events[calendar->days[18].event_count++], "Mid term exam end");
+           strcpy(calendar->days[24].events[calendar->days[24].event_count++], "Christmas"); 
+        }
+    }
+}
+
+// Function to calculate the day of the week for the 1st day of the month (Zeller's Algorithm)
+int calculateFirstDay(int year, int month) {
+    if (month <= 2) {
+        month += 12;
+        year--;
+    }
+    int K = year % 100;
+    int J = year / 100;
+    int dayOfWeek = (1 + (13 * (month + 1)) / 5 + K + K / 4 + J / 4 - 2 * J) % 7;
+    return (dayOfWeek + 7) % 7; // To ensure the result is between 0 (Sunday) and 6 (Saturday)
+}
+
+// Function to print a single month's calendar with events
+void printMonth(Calendar calendar) {
+    printf("\n==== Calendar for %d-%02d ====\n", calendar.year, calendar.month);
+    printf("Sun Mon Tue Wed Thu Fri Sat\n");
+
+    int firstDay = calculateFirstDay(calendar.year, calendar.month);
+
+    // Print leading spaces
+    for (int i = 0; i < firstDay; i++) {
+        printf("    ");
+    }
+
+    // Print days
+    for (int day = 1; day <= MAX_DAYS_IN_MONTH; day++) {
+        printf("%3d", day);
+
+        // Mark day with events
+        if (calendar.days[day - 1].event_count > 0) {
+            printf(" (*)");
+        } else {
+            printf("    ");
+        }
+
+        // New line after Saturday
+        if ((firstDay + day) % 7 == 0) {
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
+// Function to print the calendar for the entire year
+void printYear(int year) {
+    for (int month = 1; month <= 12; month++) {
+        // Create a calendar object for each month
+        Calendar calendar;
+        calendar.year = year;
+        calendar.month = month;
+
+        // Initialize all days with no events
+        for (int i = 0; i < MAX_DAYS_IN_MONTH; i++) {
+            calendar.days[i].day = i + 1;
+            calendar.days[i].event_count = 0;
+        }
+
+        // Populate events for the month
+        populateEvents(&calendar);
+
+        // Print the month's calendar
+        printMonth(calendar);
+    }
+}
+
+// Function to display events for a specific day
+void viewEvents(Calendar calendar, int day) {
+    if (day < 1 || day > MAX_DAYS_IN_MONTH) {
+        printf("Invalid day!\n");
+        return;
+    }
+
+    Day targetDay = calendar.days[day - 1];
+    if (targetDay.event_count == 0) {
+        printf("No events on this day.\n");
+    } else {
+        printf("Events for Day %d:\n", day);
+        for (int i = 0; i < targetDay.event_count; i++) {
+            printf("%d. %s\n", i + 1, targetDay.events[i]);
+        }
+    }
+}
+
+// Function to display the menu
+void displayMenu() {
+    printf("\nDepartment Calendar System\n");
+    printf("1. View Calendar for Whole Year\n");
+    printf("2. View Events for a Specific Day\n");
+    printf("3. Exit\n");
+    printf("Enter your choice: ");
+}
+
+int main() {
+    int choice, day;
+
+    while (1) {
+        displayMenu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printYear(2024); // Print the calendar for 2024
+                break;
+            case 2: {
+                int month;
+                printf("Enter the month (1-12): ");
+                scanf("%d", &month);
+                printf("Enter the day (1-31): ");
+                scanf("%d", &day);
+
+                if (month < 1 || month > 12) {
+                    printf("Invalid month!\n");
+                    break;
+                }
+
+                // Create a calendar for the specific month
+                Calendar calendar;
+                calendar.year = 2024;
+                calendar.month = month;
+
+                // Initialize all days with no events
+                for (int i = 0; i < MAX_DAYS_IN_MONTH; i++) {
+                    calendar.days[i].day = i + 1;
+                    calendar.days[i].event_count = 0;
+                }
+
+                // Populate events for the specific month
+                populateEvents(&calendar);
+
+                // Display events for the specific day
+                viewEvents(calendar, day);
+                break;
+            }
+            case 3:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
